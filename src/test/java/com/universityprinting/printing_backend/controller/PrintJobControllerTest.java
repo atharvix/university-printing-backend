@@ -21,6 +21,7 @@ import com.universityprinting.printing_backend.model.ColorMode;
 import com.universityprinting.printing_backend.model.PaperSize;
 import com.universityprinting.printing_backend.model.PrintJobStatus;
 import com.universityprinting.printing_backend.service.PrintJobService;
+import com.universityprinting.printing_backend.service.QueueService;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
@@ -40,13 +41,16 @@ class PrintJobControllerTest {
     @Mock
     private PrintJobService printJobService;
 
+    @Mock
+    private QueueService queueService;
+
     private MockMvc mockMvc;
     private Jwt mockJwt;
     private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
-        PrintJobController printJobController = new PrintJobController(printJobService);
+        PrintJobController printJobController = new PrintJobController(printJobService, queueService);
         mockMvc = MockMvcBuilders.standaloneSetup(printJobController)
             .setControllerAdvice(new GlobalExceptionHandler())
             .setCustomArgumentResolvers(new org.springframework.web.method.support.HandlerMethodArgumentResolver() {

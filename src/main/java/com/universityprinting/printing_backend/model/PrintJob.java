@@ -32,12 +32,53 @@ public class PrintJob {
 
     private PrintJobStatus status = PrintJobStatus.QUEUED;
 
+    private Boolean queueEligible = false;
+
+    private String assignedPrinterId;
+
+    private String assignedAgentId;
+
     private Instant createdAt;
 
     private Instant updatedAt;
 
     public PrintJob() {
         this.status = PrintJobStatus.QUEUED;
+        this.queueEligible = false;
+    }
+
+    public PrintJob(
+        String id,
+        String ownerId,
+        String documentId,
+        Integer copies,
+        ColorMode colorMode,
+        PaperSize paperSize,
+        Boolean duplex,
+        Integer pageCount,
+        BigDecimal price,
+        PrintJobStatus status,
+        Boolean queueEligible,
+        String assignedPrinterId,
+        String assignedAgentId,
+        Instant createdAt,
+        Instant updatedAt
+    ) {
+        this.id = id;
+        this.ownerId = ownerId;
+        this.documentId = documentId;
+        this.copies = copies;
+        this.colorMode = colorMode;
+        this.paperSize = paperSize;
+        this.duplex = duplex;
+        this.pageCount = pageCount;
+        this.price = price;
+        this.status = status != null ? status : PrintJobStatus.QUEUED;
+        this.queueEligible = queueEligible != null ? queueEligible : false;
+        this.assignedPrinterId = assignedPrinterId;
+        this.assignedAgentId = assignedAgentId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public PrintJob(
@@ -54,18 +95,7 @@ public class PrintJob {
         Instant createdAt,
         Instant updatedAt
     ) {
-        this.id = id;
-        this.ownerId = ownerId;
-        this.documentId = documentId;
-        this.copies = copies;
-        this.colorMode = colorMode;
-        this.paperSize = paperSize;
-        this.duplex = duplex;
-        this.pageCount = pageCount;
-        this.price = price;
-        this.status = status != null ? status : PrintJobStatus.QUEUED;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this(id, ownerId, documentId, copies, colorMode, paperSize, duplex, pageCount, price, status, false, null, null, createdAt, updatedAt);
     }
 
     public String getId() {
@@ -146,6 +176,30 @@ public class PrintJob {
 
     public void setStatus(PrintJobStatus status) {
         this.status = status != null ? status : PrintJobStatus.QUEUED;
+    }
+
+    public Boolean getQueueEligible() {
+        return queueEligible;
+    }
+
+    public void setQueueEligible(Boolean queueEligible) {
+        this.queueEligible = queueEligible != null ? queueEligible : false;
+    }
+
+    public String getAssignedPrinterId() {
+        return assignedPrinterId;
+    }
+
+    public void setAssignedPrinterId(String assignedPrinterId) {
+        this.assignedPrinterId = assignedPrinterId;
+    }
+
+    public String getAssignedAgentId() {
+        return assignedAgentId;
+    }
+
+    public void setAssignedAgentId(String assignedAgentId) {
+        this.assignedAgentId = assignedAgentId;
     }
 
     public Instant getCreatedAt() {

@@ -89,7 +89,8 @@ public class SecurityConfig {
         HttpSecurity http,
         JwtAuthenticationConverter jwtAuthenticationConverter,
         AuthenticationEntryPoint authenticationEntryPoint,
-        AccessDeniedHandler accessDeniedHandler
+        AccessDeniedHandler accessDeniedHandler,
+        AgentAuthenticationFilter agentAuthenticationFilter
     ) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
@@ -100,9 +101,11 @@ public class SecurityConfig {
                 .authenticationEntryPoint(authenticationEntryPoint)
                 .accessDeniedHandler(accessDeniedHandler)
             )
+            .addFilterBefore(agentAuthenticationFilter, org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/health").permitAll()
                 .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
+                .requestMatchers("/api/payments/webhook").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .anyRequest().authenticated()
             )

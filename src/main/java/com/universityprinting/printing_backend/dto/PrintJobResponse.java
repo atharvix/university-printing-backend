@@ -19,6 +19,9 @@ public class PrintJobResponse {
     private Integer pageCount;
     private BigDecimal price;
     private PrintJobStatus status;
+    private Boolean queueEligible;
+    private String assignedPrinterId;
+    private String assignedAgentId;
     private Instant createdAt;
     private Instant updatedAt;
 
@@ -36,6 +39,9 @@ public class PrintJobResponse {
         Integer pageCount,
         BigDecimal price,
         PrintJobStatus status,
+        Boolean queueEligible,
+        String assignedPrinterId,
+        String assignedAgentId,
         Instant createdAt,
         Instant updatedAt
     ) {
@@ -49,8 +55,28 @@ public class PrintJobResponse {
         this.pageCount = pageCount;
         this.price = price;
         this.status = status;
+        this.queueEligible = queueEligible;
+        this.assignedPrinterId = assignedPrinterId;
+        this.assignedAgentId = assignedAgentId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public PrintJobResponse(
+        String id,
+        String ownerId,
+        String documentId,
+        Integer copies,
+        ColorMode colorMode,
+        PaperSize paperSize,
+        Boolean duplex,
+        Integer pageCount,
+        BigDecimal price,
+        PrintJobStatus status,
+        Instant createdAt,
+        Instant updatedAt
+    ) {
+        this(id, ownerId, documentId, copies, colorMode, paperSize, duplex, pageCount, price, status, false, null, null, createdAt, updatedAt);
     }
 
     public static PrintJobResponse from(PrintJob job) {
@@ -65,6 +91,9 @@ public class PrintJobResponse {
             job.getPageCount(),
             job.getPrice(),
             job.getStatus(),
+            job.getQueueEligible(),
+            job.getAssignedPrinterId(),
+            job.getAssignedAgentId(),
             job.getCreatedAt(),
             job.getUpdatedAt()
         );
@@ -148,6 +177,30 @@ public class PrintJobResponse {
 
     public void setStatus(PrintJobStatus status) {
         this.status = status;
+    }
+
+    public Boolean getQueueEligible() {
+        return queueEligible;
+    }
+
+    public void setQueueEligible(Boolean queueEligible) {
+        this.queueEligible = queueEligible;
+    }
+
+    public String getAssignedPrinterId() {
+        return assignedPrinterId;
+    }
+
+    public void setAssignedPrinterId(String assignedPrinterId) {
+        this.assignedPrinterId = assignedPrinterId;
+    }
+
+    public String getAssignedAgentId() {
+        return assignedAgentId;
+    }
+
+    public void setAssignedAgentId(String assignedAgentId) {
+        this.assignedAgentId = assignedAgentId;
     }
 
     public Instant getCreatedAt() {

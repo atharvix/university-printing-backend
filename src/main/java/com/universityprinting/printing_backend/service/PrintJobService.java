@@ -109,6 +109,12 @@ public class PrintJobService {
         return PrintJobResponse.from(savedJob);
     }
 
+    public PrintJobResponse getPrintJobById(String id) {
+        PrintJob printJob = printJobRepository.findById(id)
+            .orElseThrow(() -> new PrintJobNotFoundException("Print job not found with ID: " + id));
+        return PrintJobResponse.from(printJob);
+    }
+
     public List<PrintJobResponse> getPrintJobsByStatus(PrintJobStatus status) {
         return printJobRepository.findByStatus(status)
             .stream()

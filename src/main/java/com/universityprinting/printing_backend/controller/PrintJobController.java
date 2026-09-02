@@ -1,9 +1,12 @@
 package com.universityprinting.printing_backend.controller;
 
 import com.universityprinting.printing_backend.dto.CreatePrintJobRequest;
+import com.universityprinting.printing_backend.dto.PrintJobEventResponse;
 import com.universityprinting.printing_backend.dto.PrintJobResponse;
+import com.universityprinting.printing_backend.model.ActorType;
 import com.universityprinting.printing_backend.model.PrintJobStatus;
 import com.universityprinting.printing_backend.service.PrintJobService;
+import com.universityprinting.printing_backend.service.QueueService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -26,9 +30,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class PrintJobController {
 
     private final PrintJobService printJobService;
+    private final QueueService queueService;
 
-    public PrintJobController(PrintJobService printJobService) {
+    public PrintJobController(PrintJobService printJobService, QueueService queueService) {
         this.printJobService = printJobService;
+        this.queueService = queueService;
     }
 
     @PostMapping
@@ -82,6 +88,72 @@ public class PrintJobController {
     ) {
         String ownerId = extractUserId(jwt, authentication);
         PrintJobResponse response = printJobService.cancelPrintJob(id, ownerId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/queue")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OPERATOR')")
+    public ResponseEntity<List<PrintJobResponse>> getQueue(
+        @RequestParam(value = "status", required = false) PrintJobStatus status
+    ) {
+        List<PrintJobResponse> response = queueService.getQueue(status);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}/claim")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OPERATOR')")
+    public ResponseEntity<PrintJobResponse> claimPrintJob(
+        @PathVariable("id") String id,
+        @RequestParam("printerId") String printerId,
+        @AuthenticationPrincipal Jwt jwt,
+        Authentication authentication
+    ) {
+        String actorId = extractUserId(jwt, authentication);
+        PrintJobResponse response = queueService.claimSpecificJob(id, printerId, actorId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}/complete")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OPERATOR')")
+    public ResponseEntity<PrintJobResponse> completePrintJob(
+        @PathVariable("id") String id,
+        @AuthenticationPrincipal Jwt jwt,
+        Authentication authentication
+    ) {
+        String actorId = extractUserId(jwt, authentication);
+        PrintJobResponse response = queueService.completeJob(id, ActorType.OPERATOR, actorId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}/fail")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OPERATOR')")
+    public ResponseEntity<PrintJobResponse> failPrintJob(
+        @PathVariable("id") String id,
+        @RequestParam(value = "reason", required = false) String reason,
+        @AuthenticationPrincipal Jwt jwt,
+        Authentication authentication
+    ) {
+        String actorId = extractUserId(jwt, authentication);
+        PrintJobResponse response = queueService.failJob(id, reason, ActorType.OPERATOR, actorId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}/events")
+    public ResponseEntity<List<PrintJobEventResponse>> getJobEvents(
+        @PathVariable("id") String id,
+        @AuthenticationPrincipal Jwt jwt,
+        Authentication authentication
+    ) {
+        String userId = extractUserId(jwt, authentication);
+        // Verify user is either the owner or admin/operator
+        PrintJobResponse job = printJobService.getPrintJobById(id);
+        boolean isPrivileged = authentication.getAuthorities().stream()
+            .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_OPERATOR"));
+        if (!isPrivileged && !userId.equals(job.getOwnerId())) {
+            throw new AccessDeniedException("You do not have permission to view events for this print job");
+        }
+
+        List<PrintJobEventResponse> response = queueService.getJobEvents(id);
         return ResponseEntity.ok(response);
     }
 

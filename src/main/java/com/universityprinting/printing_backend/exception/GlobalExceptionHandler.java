@@ -53,6 +53,94 @@ public class GlobalExceptionHandler {
         ));
     }
 
+    @ExceptionHandler(PaymentNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handlePaymentNotFound(PaymentNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+            "error", "Not found",
+            "message", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(AgentNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleAgentNotFound(AgentNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+            "error", "Not found",
+            "message", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(AgentDisabledException.class)
+    public ResponseEntity<Map<String, String>> handleAgentDisabled(AgentDisabledException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
+            "error", "Forbidden",
+            "message", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(UnauthorizedAgentAccessException.class)
+    public ResponseEntity<Map<String, String>> handleUnauthorizedAgentAccess(UnauthorizedAgentAccessException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
+            "error", "Forbidden",
+            "message", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(PrinterNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handlePrinterNotFound(PrinterNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+            "error", "Not found",
+            "message", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(PrinterUnavailableException.class)
+    public ResponseEntity<Map<String, String>> handlePrinterUnavailable(PrinterUnavailableException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+            "error", "Printer unavailable",
+            "message", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(IncompatiblePrinterException.class)
+    public ResponseEntity<Map<String, String>> handleIncompatiblePrinter(IncompatiblePrinterException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+            "error", "Incompatible printer",
+            "message", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(JobAlreadyClaimedException.class)
+    public ResponseEntity<Map<String, String>> handleJobAlreadyClaimed(JobAlreadyClaimedException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+            "error", "Conflict",
+            "message", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(PaymentVerificationException.class)
+    public ResponseEntity<Map<String, String>> handlePaymentVerificationFailed(PaymentVerificationException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+            "error", "Payment verification failed",
+            "message", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(DuplicatePaymentException.class)
+    public ResponseEntity<Map<String, String>> handleDuplicatePayment(DuplicatePaymentException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+            "error", "Conflict",
+            "message", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(UnauthorizedPaymentAccessException.class)
+    public ResponseEntity<Map<String, String>> handleUnauthorizedPaymentAccess(UnauthorizedPaymentAccessException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
+            "error", "Forbidden",
+            "message", ex.getMessage()
+        ));
+    }
+
     @ExceptionHandler(StorageException.class)
     public ResponseEntity<Map<String, String>> handleStorageException(StorageException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
