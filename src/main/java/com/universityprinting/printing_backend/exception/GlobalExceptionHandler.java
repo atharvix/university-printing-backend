@@ -61,6 +61,30 @@ public class GlobalExceptionHandler {
         ));
     }
 
+    @ExceptionHandler(PrintJobNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handlePrintJobNotFound(PrintJobNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+            "error", "Not found",
+            "message", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(InvalidPrintJobStateException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidPrintJobState(InvalidPrintJobStateException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+            "error", "Conflict",
+            "message", ex.getMessage()
+        ));
+    }
+
+    @ExceptionHandler(UnauthorizedPrintJobAccessException.class)
+    public ResponseEntity<Map<String, String>> handleUnauthorizedPrintJobAccess(UnauthorizedPrintJobAccessException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
+            "error", "Forbidden",
+            "message", ex.getMessage()
+        ));
+    }
+
     @ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
     public ResponseEntity<Map<String, String>> handleMaxUploadSizeExceeded(org.springframework.web.multipart.MaxUploadSizeExceededException ex) {
         return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(Map.of(
